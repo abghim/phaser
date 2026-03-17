@@ -21,19 +21,46 @@ impl Color {
             ((self.2 as f32) * (1.0 - f) + (other.2 as f32) * f) as u8,
         )
     }
+
+    fn hex_str(&self) -> String {
+        format!("#{}{}{}", format_radix(self.0 as u32, 16), format_radix(self.1 as u32, 16), format_radix(self.2 as u32, 16))
+    }
 }
+
+fn format_radix(mut x: u32, radix: u32) -> String {
+    let mut result = vec![];
+
+    loop {
+        let m = x % radix;
+        x = x / radix;
+
+        result.push(std::char::from_digit(m, radix).unwrap());
+        if x == 0 {
+            break;
+        }
+    }
+    result.into_iter().rev().collect()
+}
+
 
 fn cprint(c: &str, c1: Color, c2: Color) {
     print!("{}{}{}\x1b[0m", c1.to_ansi(), c2.to_ansi_bg(), c);
 }
 
-fn h2a(hx: u32) -> Color {
+fn tmux_print(c: &str, c1: Color, c2: Color) {
+    print!("#[fg={},bg={}]{}#[fg=default,bg=default]", c1.hex_str(), c2.hex_str(), c);
+}
+
+
+
+fn hex_to_color(hx: u32) -> Color {
     Color(
         ((hx >> 16) & 0xff) as u8,
         ((hx >> 8) & 0xff) as u8,
         (hx & 0xff) as u8,
     )
 }
+
 
 const GLYPH: &str = "";
 
@@ -43,11 +70,12 @@ fn main() {
         return;
     }
     let mut args = std::env::args().skip(1);
-    let c1 = h2a(u32::from_str_radix(args.next().unwrap().as_str(), 16).unwrap_or(0));
-    let c2 = h2a(u32::from_str_radix(args.next().unwrap().as_str(), 16).unwrap_or(0));
+    let c1 = hex_to_color(u32::from_str_radix(args.next().unwrap().as_str(), 16).unwrap_or(0));
+    let c2 = hex_to_color(u32::from_str_radix(args.next().unwrap().as_str(), 16).unwrap_or(0));
     let n = (u32::from_str_radix(args.next().unwrap().as_str(), 10).unwrap());
     let msg = args.next().unwrap();
 
+    // cprint(&msg, Color(255, 255, 255), c1);
     cprint(&msg, Color(255, 255, 255), c1);
 
     let step: f32 = 1.0/(n as f32);
@@ -59,6 +87,7 @@ fn main() {
         let cnow = c1.mix(&c2, fnow);
         let cprev = c1.mix(&c2, fprev);
 
+        // cprint(GLYPH, cprev, cnow);
         cprint(GLYPH, cprev, cnow);
         
     }
