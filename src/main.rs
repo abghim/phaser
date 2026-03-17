@@ -24,7 +24,7 @@ impl Color {
 }
 
 fn cprint(c: &str, c1: Color, c2: Color) {
-    print!("{}{}{}\x1b[0m", c1.to_ansi(), c1.to_ansi_bg(), c);
+    print!("{}{}{}\x1b[0m", c1.to_ansi(), c2.to_ansi_bg(), c);
 }
 
 fn h2a(hx: u32) -> Color {
@@ -52,7 +52,7 @@ fn main() {
 
     let step: f32 = 1.0/(n as f32);
 
-    for i in 1..n {
+    for i in 1..(n+1) {
         let fnow = (i as f32)*step;
         let fprev = (i as f32 -1.0)*step;
 
