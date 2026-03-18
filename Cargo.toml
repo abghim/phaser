@@ -1,6 +1,12 @@
 [package]
-name = "phaser"
+name = "phaser-tty"
 version = "0.1.0"
 edition = "2024"
+description = "Painless color gradients for your terminal."
+readme = "./README.md"
+license-file = "./LICENSE.txt"
+repository = "https://github.com/abghim/phaser"
+homepage = "https://github.com/abghim/phaser"
 
 [dependencies]
+
